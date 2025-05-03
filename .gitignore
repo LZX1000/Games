@@ -1,3 +1,4 @@
 /incremental_incremental.py
-/__pycache__/
-/templates/pygame_1/__pycache__/
+/__pycache__
+templates/pygame_1/__pycache__
+*.pyc
