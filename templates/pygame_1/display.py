@@ -83,12 +83,6 @@ class Display:
                 button_debug_surface.set_alpha(128)  # Semi-transparent
                 self.__internal_surface.blit(button_debug_surface, (mouse_pos[0], mouse_pos[1] + i * self.__debug_font.get_height()))
 
-
-            # button_debug_surface = self.__debug_font.render(repr(button), False, (0, 0, 0), (255, 255, 255))
-            # button_debug_surface = button_debug_surface.convert_alpha() # Allow per-pixel changes
-            # button_debug_surface.set_alpha(128)  # Semi-transparent
-            # self.__internal_surface.blit(button_debug_surface, mouse_pos if mouse_pos else button.get_rect().bottomleft)
-
         # Draw the title
         title_surface = self.__font.render(self.__title, True, (255, 255, 255))
         self.__internal_surface.blit(title_surface, (10, 10))

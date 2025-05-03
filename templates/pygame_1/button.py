@@ -10,7 +10,12 @@ from display import Display
 
 class Button(pygame.sprite.Sprite):
     """Creates a button object, contains a text surface and a rect object."""
-    __slots__ = ('__debug_color', '__surface', '__rect', '__effect')
+    __slots__ = (
+        '__debug_color',
+        '__surface',
+        '__effect',
+        '__rect'
+    )
 
     def __init__(
         self,
@@ -26,10 +31,13 @@ class Button(pygame.sprite.Sprite):
         self.__effect = effect
 
         self.__rect = pygame.Rect(*topleft, *surface.get_size())
-    
-    def get_rect(self) -> pygame.Rect:
-        """Returns the rect object of the button."""
-        return self.__rect
+
+    '''FUNCTIONS'''
+
+    def clicked(self) -> None:
+        """Called when the button is clicked."""
+        if self.__effect is not None:
+            self.__effect()
 
     def update(
         self,
@@ -44,15 +52,16 @@ class Button(pygame.sprite.Sprite):
 
         display.blit(self.__surface, self.__rect.topleft)
 
-    def clicked(self) -> None:
-        """Called when the button is clicked."""
-        if self.__effect is not None:
-            self.__effect()
-
     def debug(self, display: Display) -> None:
         """Draws a debug rectangle on the given surface."""
         pygame.draw.rect(display.get_internal_surface(), self.__debug_color, self.__rect, 1)
 
+    '''GETTERS'''
+
+    def get_rect(self) -> pygame.Rect:
+        return self.__rect
+
+    '''DUNDERS'''
+
     def __repr__(self) -> str:
-        """Returns a string representation of the button."""
         return f"Button\n  rect={str(self.__rect.topleft)}, ({str(self.__rect.left)}, {str(self.__rect.height)}),\n  effect={inspect.getsource(self.__effect)[15:]}"
