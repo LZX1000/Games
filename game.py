@@ -1,19 +1,35 @@
 import pygame
 
+from typing import Any
+
 def event_handling(
     keys: dict[int, bool],
-    debug_mode: bool
-) -> bool:
+    mouse_pos: tuple[int, int],
+    buttons: list[pygame.sprite.Sprite] = []
+) -> dict[str, Any]:
     '''
     Handles events such as mouse clicks and keyboard inputs.
     '''
+    changed_values: dict[str, Any] = {}
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
+            quit()
 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE and keys[pygame.K_LCTRL]:
-                debug_mode = not debug_mode
+                changed_values['debug_mode'] = True
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                for button in buttons:
+                    if button.get_rect().collidepoint(mouse_pos):
+                        button.clicked()
 
-    return debug_mode
+    return changed_values
+
+def quit() -> None:
+    '''
+    Quits the Pygame instance.
+    '''
+    pygame.quit()
+    exit()
