@@ -2,6 +2,7 @@ import pygame
 
 from typing import Any
 
+
 type color = tuple[int, int, int]
 type coords = tuple[int, int]
 
