@@ -8,9 +8,9 @@ from typing import Any
 type color = tuple[int, int, int]
 type coords = tuple[int, int]
 
-DEFAULT_INTERNAL_RESOLUTION = (640, 360)
+DEFAULT_INTERNAL_RESOLUTION = (1280, 780)
 DEFAULT_EXTERNAL_RESOLUTION = (1920, 1080)
-FONT_SCALE_FACTOR = 18
+FONT_SCALE_FACTOR = 36
 
 class Display:
     __slots__ = (
