@@ -2,6 +2,7 @@
 
 import pygame
 
+import inspect
 from typing import Callable
 
 from display import Display
@@ -51,3 +52,7 @@ class Button(pygame.sprite.Sprite):
     def debug(self, display: Display) -> None:
         """Draws a debug rectangle on the given surface."""
         pygame.draw.rect(display.get_internal_surface(), self.__debug_color, self.__rect, 1)
+
+    def __repr__(self) -> str:
+        """Returns a string representation of the button."""
+        return f"Button\n  rect={str(self.__rect.topleft)}, ({str(self.__rect.left)}, {str(self.__rect.height)}),\n  effect={inspect.getsource(self.__effect)[15:]}"

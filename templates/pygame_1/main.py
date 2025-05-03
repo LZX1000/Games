@@ -27,6 +27,11 @@ def main() -> None:
         effect=lambda: setattr(game, 'BACKGROUND_COLOR', random.choice([(0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255), (0, 255, 255), (255, 128, 0)])),
         debug_color=(0, 255, 0)
     ))
+    buttons.append(Button(
+        surface=(button_surface := display.get_font().render("Set Background Color Red", False, (0, 0, 0), (200, 200, 200))),
+        topleft=(display.get_internal_surface().get_width() // 2 - button_surface.get_width() // 2, display.get_internal_surface().get_height() // 2 - button_surface.get_height() // 2 - 50),
+        effect=lambda: setattr(game, 'BACKGROUND_COLOR', (255, 0, 0)),
+    ))
 
     # Main loop
     while True:
@@ -58,9 +63,14 @@ def main() -> None:
             tracked_values["mouse_pos"] = mouse_pos
 
             # Button hover
+            button_hovered = False
             for button in buttons:
                 if button.get_rect().collidepoint(mouse_pos):
                     tracked_values["button_hover"] = button
+                    button_hovered = True
+                    break
+            if not button_hovered:
+                tracked_values.pop("button_hover", None)
 
         # Update display
         display.update(tracked_values)

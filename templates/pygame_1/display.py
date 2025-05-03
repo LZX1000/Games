@@ -46,7 +46,7 @@ class Display:
         
         # Set the font
         self.__font = pygame.font.SysFont("Arial", self.__internal_resolution[0] // FONT_SCALE_FACTOR)
-        self.__debug_font = pygame.font.SysFont("Arial", self.__internal_resolution[0] // (FONT_SCALE_FACTOR * 2))
+        self.__debug_font = pygame.font.SysFont("Arial", self.__font.get_height() // 2)
 
         # Create internal surface for rendering
         self.__internal_surface = pygame.Surface(self.__internal_resolution)
@@ -75,10 +75,19 @@ class Display:
 
         # Button hover
         if (button := values.get('button_hover', False)):
-            button_debug_surface = self.__debug_font.render(repr(button), False, (0, 0, 0), (255, 255, 255))
-            button_debug_surface = button_debug_surface.convert_alpha() # Allow per-pixel changes
-            button_debug_surface.set_alpha(128)  # Semi-transparent
-            self.__internal_surface.blit(button_debug_surface, mouse_pos if mouse_pos else button.get_rect().bottomleft)
+            repr_text = repr(button).split('\n')
+            for i, line in enumerate(repr_text):
+                button_debug_surface = self.__debug_font.render(line, False, (0, 0, 0), (255, 255, 255))
+                button_debug_surface = button_debug_surface.convert_alpha()
+                button_debug_surface = button_debug_surface.convert_alpha() # Allow per-pixel changes
+                button_debug_surface.set_alpha(128)  # Semi-transparent
+                self.__internal_surface.blit(button_debug_surface, (mouse_pos[0], mouse_pos[1] + i * self.__debug_font.get_height()))
+
+
+            # button_debug_surface = self.__debug_font.render(repr(button), False, (0, 0, 0), (255, 255, 255))
+            # button_debug_surface = button_debug_surface.convert_alpha() # Allow per-pixel changes
+            # button_debug_surface.set_alpha(128)  # Semi-transparent
+            # self.__internal_surface.blit(button_debug_surface, mouse_pos if mouse_pos else button.get_rect().bottomleft)
 
         # Draw the title
         title_surface = self.__font.render(self.__title, True, (255, 255, 255))
