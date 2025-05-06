@@ -1,4 +1,9 @@
-/incremental_incremental.py
-/__pycache__
-templates/pygame_1/__pycache__/*
+# Ignore .pyc files everywhere
 *.pyc
+
+# Ignore all __pycache__ folders and contents
+__pycache__/
+**/__pycache__/
+
+# (Optional) Ignore specific files or folders
+/incremental_incremental.py
