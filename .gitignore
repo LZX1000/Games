@@ -2,8 +2,8 @@
 *.pyc
 
 # Ignore all __pycache__ folders and contents
-__pycache__/
-**/__pycache__/
+__pycache__\
+**\__pycache__\
 
 # (Optional) Ignore specific files or folders
-/incremental_incremental.py
+\incremental_incremental.py
