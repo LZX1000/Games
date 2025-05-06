@@ -23,13 +23,19 @@ def main() -> None:
     buttons: list[Button] = []
     buttons.append(Button(
         surface=(button_surface := display.get_font().render("Change Background Color", False, (0, 0, 0), (200, 200, 200))),
-        topleft=(display.get_internal_surface().get_width() // 2 - button_surface.get_width() // 2, display.get_internal_surface().get_height() // 2 - button_surface.get_height() // 2),
+        topleft=(
+            display.get_internal_surface().get_width() // 2 - button_surface.get_width() // 2,
+            display.get_internal_surface().get_height() // 2 - button_surface.get_height() // 2
+            ),
         effect=lambda: setattr(game, 'BACKGROUND_COLOR', random.choice([(0, 255, 0), (0, 0, 255), (255, 255, 0), (255, 0, 255), (0, 255, 255), (255, 128, 0)])),
         debug_color=(0, 255, 0)
     ))
     buttons.append(Button(
         surface=(button_surface := display.get_font().render("Set Background Color Red", False, (0, 0, 0), (200, 200, 200))),
-        topleft=(display.get_internal_surface().get_width() // 2 - button_surface.get_width() // 2, display.get_internal_surface().get_height() // 2 - button_surface.get_height() // 2 - 50),
+        topleft=(
+            display.get_internal_surface().get_width() // 2 - button_surface.get_width() // 2,
+            display.get_internal_surface().get_height() // 2 - button_surface.get_height() // 2 - 50
+            ),
         effect=lambda: setattr(game, 'BACKGROUND_COLOR', (255, 0, 0)),
     ))
 
