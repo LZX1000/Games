@@ -1,12 +1,11 @@
 # main.py
 
-# Pygame
+# Python
 import pygame
-
-# Python Others
 from typing import Any
 
 # Gamestates
+import config
 import game
 import menu
 
@@ -20,6 +19,8 @@ GAMESTATES = {
     "game" : game,
     "menu" : menu
 }
+
+CURRENT_GAMESTATE = "menu"  # Starting gamestate
 
 
 class Gamestate():
@@ -35,10 +36,15 @@ def main() -> None:
     tracked_values: dict[str, Any] = {'debug_mode': False}
     # gamestate = "game"
 
-    gamestate: Gamestate = GAMESTATES["menu"].scene(display)  # Start with the menu gamestate
+    gamestate: Gamestate = GAMESTATES[config.CURRENT_GAMESTATE].Scene(display)  # Start with the menu gamestate
 
     # Main loop
     while True:
+        if config.CURRENT_GAMESTATE != gamestate.get_name():
+            if config.CURRENT_GAMESTATE == "quit":
+                quit()
+            gamestate = GAMESTATES[config.CURRENT_GAMESTATE].Scene(display)
+
         # Get held keys
         keys = pygame.key.get_pressed()
 
