@@ -1,3 +1,4 @@
 # config.py
 
 CURRENT_GAMESTATE = "menu"
+BUTTON_EDGE_SPACING = 1/3

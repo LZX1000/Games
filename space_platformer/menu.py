@@ -23,10 +23,10 @@ class Scene():
         # Create buttons
         self.__objects: list[Any] = []
         self.__objects.append(Button(
-            surface=(button_surface := display.get_font().render("Go To Game", False, (0, 0, 0), (200, 200, 200))),
+            surface=(button_surface := display.get_font().render(" > ", False, (0, 0, 0), (200, 200, 200))),
             topleft=(
-                display.get_internal_surface().get_width() // 2 - button_surface.get_width() // 2,
-                display.get_internal_surface().get_height() // 2 - button_surface.get_height() // 2 + 50
+                display.get_internal_surface().get_width() - button_surface.get_width() * config.BUTTON_EDGE_SPACING - button_surface.get_width(),
+                display.get_internal_surface().get_height() - button_surface.get_height() * config.BUTTON_EDGE_SPACING - button_surface.get_height()
                 ),
             effect=lambda: setattr(config, 'CURRENT_GAMESTATE', 'game'),
         ))
