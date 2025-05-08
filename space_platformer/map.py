@@ -6,14 +6,17 @@ from os import PathLike
 
 import config
 import map_objects
-from display import Display, Renderable
+from display import Display
+from player import Player
 
 
-class Map(Renderable):
+class Map(config.Renderable):
     __slots__ = (
         "__simple_game_map",
         "__map_objects",
-        "__player_pos",
+        "__collidable_objects",
+        "__player_spawn_pos",
+        "__player",
         "__display"
     )
 
@@ -45,11 +48,11 @@ class Map(Renderable):
             row: list[str] = []
             for x in range(width):
                 color = tuple(round(x) for x in image.get_at((x, y)).normalize())
-                row.append(type_ := config.MAP_COLOR_KEYS.get(color, None))
-                if color is None:
-                    continue
-                if type_ == "PLAYER":
-                    self.__player_pos = (x, y)            
+                if (type_ := config.MAP_COLOR_KEYS.get(color, None)) != "PLAYER":
+                    row.append(type_)
+                else:
+                    row.append(None)
+                    self.__player_spawn_pos = (x, y)
 
             self.__simple_game_map.append(row)
 
@@ -87,14 +90,41 @@ class Map(Renderable):
                         size=(round(tile_size), round(tile_size))
                     ))
 
+        self.__collidable_objects = pygame.sprite.Group(self.__map_objects)
+        self.__player = Player(
+            topleft=(offset_x + self.__player_spawn_pos[0] * tile_size, offset_y + self.__player_spawn_pos[1] * tile_size),
+            size=(round(tile_size), round(tile_size))
+        )
+
     '''FUNCTIONS'''
 
     def render(self, display: Display) -> None:
         """Render the map."""
         for brick in self.__map_objects:
             brick.render(display)
+        self.__player.render(display)
 
     def debug(self, display: Display) -> None:
         """Render the debug information of the map."""
         for brick in self.__map_objects:
             brick.debug(display)
+        self.__player.debug(display)
+
+    '''GETTERS'''
+
+    def get_player_spawn_location(self) -> tuple[int, int] | None:
+        """Get the player position."""
+        return self.__player_spawn_pos
+    
+    def get_player(self) -> Player:
+        """Get the player."""
+        return self.__player
+
+
+    def get_map_objects(self) -> list[map_objects.Brick]:
+        """Get the map objects."""
+        return self.__map_objects
+    
+    def get_collidable_objects(self) -> pygame.sprite.Group:
+        """Get the collidable objects."""
+        return self.__collidable_objects

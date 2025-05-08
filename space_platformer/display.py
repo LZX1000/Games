@@ -3,7 +3,6 @@
 import pygame
 
 from typing import Any
-from abc import ABC, abstractmethod
 
 
 type color = tuple[int, int, int]
@@ -12,18 +11,6 @@ type coords = tuple[int, int]
 DEFAULT_INTERNAL_RESOLUTION = (1280, 780)
 DEFAULT_EXTERNAL_RESOLUTION = (1920, 1080)
 FONT_SCALE_FACTOR = 36
-
-
-class Renderable(ABC):
-    @abstractmethod
-    def render(self, display: 'Display', pos: tuple[int, int] | None = None) -> None:
-        """Render the object on the display."""
-        pass
-
-    # @abstractmethod
-    # def debug(self, display: 'Display') -> None:
-    #     """Draw debug information on the display."""
-    #     pass
 
 
 class Display:
