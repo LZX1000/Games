@@ -48,6 +48,14 @@ class Scene():
                 ),
             effect=lambda: setattr(config, 'CURRENT_GAMESTATE', 'menu'),
         ))
+        self.__objects.append(Button(
+            surface=(button_surface := display.get_font().render(" > ", False, (0, 0, 0), (200, 200, 200))),
+            topleft=(
+                display.get_internal_surface().get_width() - button_surface.get_width() * config.BUTTON_EDGE_SPACING - button_surface.get_width(),
+                display.get_internal_surface().get_height() - button_surface.get_height() * config.BUTTON_EDGE_SPACING - button_surface.get_height()
+                ),
+            effect=lambda: setattr(config, 'CURRENT_GAMESTATE', 'map_test'),
+        ))
 
     '''GETTERS'''
 

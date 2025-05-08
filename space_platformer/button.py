@@ -3,6 +3,7 @@
 import pygame
 
 import inspect
+import random
 from typing import Callable
 
 from display import Display, Renderable
@@ -27,7 +28,7 @@ class Button(pygame.sprite.Sprite, Renderable, Clickable):
         surface: pygame.Surface,
         topleft: tuple[int, int] = (0, 0),
         effect: Callable | None = None,
-        debug_color: tuple[int, int, int] | None = (255, 0, 0)
+        debug_color: tuple[int, int, int] | None = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
     ) -> None:
         super().__init__()
 

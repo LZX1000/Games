@@ -8,6 +8,7 @@ from typing import Any
 import config
 import game
 import menu
+import map_test
 
 # Game Functions
 from functional import *
@@ -17,7 +18,8 @@ from display import Display, Renderable
 
 GAMESTATES = {
     "game" : game,
-    "menu" : menu
+    "menu" : menu,
+    "map_test" : map_test,
 }
 
 CURRENT_GAMESTATE = "menu"  # Starting gamestate
