@@ -4,6 +4,10 @@ import pygame
 
 from typing import Any
 
+import config
+from player import Player
+from map_objects import Brick
+
 
 type color = tuple[int, int, int]
 
@@ -33,10 +37,25 @@ def event_handling(
 
     return changed_values
 
+
 def check_player_collision(map_: pygame.sprite.Sprite) -> None:
-    collided_object = pygame.sprite.spritecollideany((player := map_.player), map_.collidable_objects)
-    if collided_object:
-        player.collide(collided_object)
+    wall_collided: config.Collidable = pygame.sprite.spritecollideany(
+        (player := map_.player), [brick for brick in map_.collidable_objects if brick.type == "WALL"],
+        # collided=__check_player_grounded
+        collided=lambda s1, s2: s1.rect.colliderect(s2.grounded_rect) if isinstance(s2, Player) else s1.grounded_rect.colliderect(s2.rect)
+    )
+    if wall_collided and not player.grounded:
+        player.grounded = True
+
+    collided_objects: list[config.Collidable] = pygame.sprite.spritecollide(
+        player, map_.collidable_objects,
+        dokill=False
+    )
+    did_wall: bool = False
+    for collided in collided_objects:
+        if collided.type == "WALL" and not did_wall:
+            did_wall = True
+        player.collide(collided)
 
 
 def quit() -> None:

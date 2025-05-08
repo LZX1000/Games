@@ -4,13 +4,7 @@ import pygame
 
 from typing import Any
 
-
-type color = tuple[int, int, int]
-type coords = tuple[int, int]
-
-DEFAULT_INTERNAL_RESOLUTION = (1280, 780)
-DEFAULT_EXTERNAL_RESOLUTION = (1920, 1080)
-FONT_SCALE_FACTOR = 36
+import config
 
 
 class Display:
@@ -26,8 +20,8 @@ class Display:
 
     def __init__(
         self,
-        internal_resolution: tuple[int, int] = DEFAULT_INTERNAL_RESOLUTION,
-        external_resolution: tuple[int, int] = DEFAULT_EXTERNAL_RESOLUTION,
+        internal_resolution: tuple[int, int] = config.DEFAULT_INTERNAL_RESOLUTION,
+        external_resolution: tuple[int, int] = config.DEFAULT_EXTERNAL_RESOLUTION,
         title: str = "unnamed"
     ) -> None:
         from ctypes import windll
@@ -46,8 +40,7 @@ class Display:
         self.__title = title
         
         # Set the font
-        self.__font = pygame.font.SysFont("Arial", self.__internal_resolution[0] // FONT_SCALE_FACTOR)
-        self.__debug_font = pygame.font.SysFont("Arial", self.__font.get_height() // 2)
+        self.font = pygame.font.SysFont("Arial", self.__internal_resolution[0] // config.FONT_SCALE_FACTOR)
 
         # Create internal surface for rendering
         self.__internal_surface = pygame.Surface(self.__internal_resolution)
@@ -57,7 +50,7 @@ class Display:
 
     '''FUNCTIONS'''
 
-    def fill(self, new: color) -> None:
+    def fill(self, new: config.color) -> None:
         """Fill the internal surface with a color."""
         self.__internal_surface.fill(new)
 
@@ -100,6 +93,8 @@ class Display:
     @property
     def font(self) -> pygame.font.Font: return self.__font
     @property
+    def debug_font(self) -> pygame.font.Font: return self.__debug_font
+    @property
     def title(self) -> str: return self.__title
     @property
     def internal_surface(self) -> pygame.Surface: return self.__internal_surface
@@ -107,7 +102,9 @@ class Display:
     def screen(self) -> pygame.Surface: return self.__screen
 
     @font.setter
-    def font(self, font: pygame.font.Font) -> None: self.__font = font
+    def font(self, font: pygame.font.Font) -> None:
+        self.__font = font
+        self.__debug_font = pygame.font.SysFont("Arial", self.__font.get_height() // 2)
     @font.setter
     def title(self, title: str) -> None:
         self.__title = title

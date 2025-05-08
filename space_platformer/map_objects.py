@@ -57,7 +57,7 @@ class Brick(pygame.sprite.Sprite, config.Renderable, config.Collidable):
             pygame.draw.rect(display.internal_surface, self.__debug_color, self.__rect, 1)
 
             # Debug information
-            font = display.font
+            font = display.debug_font
             text_surface = font.render(self.__type, False, (0, 0, 0))
             text_width, text_height = text_surface.get_size()               # Centered text
             text_offset_x, text_offset_y = (self.__rect.width - text_width) / 2, (self.__rect.height - text_height) / 2
