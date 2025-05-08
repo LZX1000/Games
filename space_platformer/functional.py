@@ -28,10 +28,16 @@ def event_handling(
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:
                 for button in buttons:
-                    if button.get_rect().collidepoint(mouse_pos):
+                    if button.rect.collidepoint(mouse_pos):
                         button.clicked()
 
     return changed_values
+
+def check_player_collision(map_: pygame.sprite.Sprite) -> None:
+    collided_object = pygame.sprite.spritecollideany((player := map_.player), map_.collidable_objects)
+    if collided_object:
+        player.collide(collided_object)
+
 
 def quit() -> None:
     """Quits the Pygame instance."""

@@ -97,25 +97,18 @@ class Display:
         self.__screen.blit(scaled_surface, (0, 0))
         pygame.display.flip()
 
-    '''GETTERS'''
+    @property
+    def font(self) -> pygame.font.Font: return self.__font
+    @property
+    def title(self) -> str: return self.__title
+    @property
+    def internal_surface(self) -> pygame.Surface: return self.__internal_surface
+    @property
+    def screen(self) -> pygame.Surface: return self.__screen
 
-    def get_font(self) -> pygame.font.Font:
-        return self.__font
-    
-    def get_title(self) -> str:
-        return self.__title
-
-    def get_internal_surface(self) -> pygame.Surface:
-        return self.__internal_surface
-
-    def get_screen(self) -> pygame.Surface:
-        return self.__screen
-
-    '''SETTERS'''
-
-    def set_font(self, font: pygame.font.Font) -> None:
-        self.__font = font
-
-    def set_title(self, title: str) -> None:
+    @font.setter
+    def font(self, font: pygame.font.Font) -> None: self.__font = font
+    @font.setter
+    def title(self, title: str) -> None:
         self.__title = title
         pygame.display.set_caption(title)

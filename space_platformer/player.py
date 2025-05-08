@@ -16,6 +16,13 @@ class Player(pygame.sprite.Sprite, config.Renderable, config.Collidable):
         '__velocity'
     )
 
+    __EFFECTS = {
+        "WALL" : lambda self: setattr(self, '__velocity', None),
+        # Alternative wall collision effect for debugging
+        # "WALL" : lambda self: self.__rect.update((random.randint(0, 300), random.randint(0, 300)), (self.__rect.width, self.__rect.height)),
+        "GOAL" : lambda: setattr(config, 'CURRENT_GAMESTATE', "menu")
+    }
+
     def __init__(
             self,
             topleft: tuple[int, int],
@@ -36,6 +43,10 @@ class Player(pygame.sprite.Sprite, config.Renderable, config.Collidable):
 
     '''FUNCTIONS'''
 
+    def collide(self, other: config.Collidable) -> None:
+        """Called when the player collides with another object."""
+        self.__EFFECTS.get(other.type, lambda self: None)(self)
+
     def render(
             self,
             display: Display,
@@ -52,17 +63,21 @@ class Player(pygame.sprite.Sprite, config.Renderable, config.Collidable):
     def debug(self, display: Display) -> None:
         """Render the debug color of the brick."""
         if self.__debug_color is not None:
-            pygame.draw.rect(display.get_internal_surface(), self.__debug_color, self.__rect, 1)
+            pygame.draw.rect(display.internal_surface, self.__debug_color, self.__rect, 1)
 
             # Debug information
-            font = display.get_font()
+            font = display.font
             text_surface = font.render(self.__class__.__name__, False, (0, 0, 0))
             text_width, text_height = text_surface.get_size()               # Centered text
             text_offset_x, text_offset_y = (self.__rect.width - text_width) / 2, (self.__rect.height - text_height) / 2
             display.blit(text_surface, (self.__rect.x + text_offset_x, self.__rect.y + text_offset_y))
 
-    '''GETTERS'''
+    @property
+    def rect(self) -> pygame.Rect: return self.__rect
+    @property
+    def position(self) -> tuple[int, int]: return self.__rect.topleft
+    @property
+    def pos(self) -> tuple[int, int]: return self.__rect.topleft
 
-    def get_rect(self) -> pygame.Rect:
-        """Get the rect of the brick."""
-        return self.__rect
+    @rect.setter
+    def pos(self, pos: tuple[int, int]) -> None: self.__rect.topleft = pos

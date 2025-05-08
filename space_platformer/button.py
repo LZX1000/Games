@@ -56,14 +56,12 @@ class Button(pygame.sprite.Sprite, config.Renderable, config.Clickable):
 
     def debug(self, display: Display) -> None:
         """Draws a debug rectangle on the given surface."""
-        pygame.draw.rect(display.get_internal_surface(), self.__debug_color, self.__rect, 1)
-
-    '''GETTERS'''
-
-    def get_rect(self) -> pygame.Rect:
-        return self.__rect
+        pygame.draw.rect(display.internal_surface, self.__debug_color, self.__rect, 1)
 
     '''DUNDERS'''
 
     def __repr__(self) -> str:
         return f"Button\n  rect={str(self.__rect.topleft)}, ({str(self.__rect.left)}, {str(self.__rect.height)}),\n  effect={inspect.getsource(self.__effect)[15:]}"
+    
+    @property
+    def rect(self) -> pygame.Rect: return self.__rect

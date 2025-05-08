@@ -69,7 +69,7 @@ class Map(config.Renderable):
 
     def __build_map(self) -> None:
         """Build the map from the simple game map."""
-        surface_width, surface_height = self.__display.get_internal_surface().get_size()
+        surface_width, surface_height = self.__display.internal_surface.get_size()
 
         # Calculate square tile size that fits in screen
         tile_size = min(
@@ -111,20 +111,11 @@ class Map(config.Renderable):
         self.__player.debug(display)
 
     '''GETTERS'''
-
-    def get_player_spawn_location(self) -> tuple[int, int] | None:
-        """Get the player position."""
-        return self.__player_spawn_pos
-    
-    def get_player(self) -> Player:
-        """Get the player."""
-        return self.__player
-
-
-    def get_map_objects(self) -> list[map_objects.Brick]:
-        """Get the map objects."""
-        return self.__map_objects
-    
-    def get_collidable_objects(self) -> pygame.sprite.Group:
-        """Get the collidable objects."""
-        return self.__collidable_objects
+    @property
+    def player_spawn_location(self) -> tuple[int, int] | None: return self.__player_spawn_pos
+    @property
+    def player(self) -> Player: return self.__player
+    @property
+    def map_objects(self) -> list[map_objects.Brick]: return self.__map_objects
+    @property
+    def collidable_objects(self) -> pygame.sprite.Group: return self.__collidable_objects

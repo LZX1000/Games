@@ -54,10 +54,10 @@ class Brick(pygame.sprite.Sprite, config.Renderable, config.Collidable):
     def debug(self, display: Display) -> None:
         """Render the debug color of the brick."""
         if self.__debug_color is not None:
-            pygame.draw.rect(display.get_internal_surface(), self.__debug_color, self.__rect, 1)
+            pygame.draw.rect(display.internal_surface, self.__debug_color, self.__rect, 1)
 
             # Debug information
-            font = display.get_font()
+            font = display.font
             text_surface = font.render(self.__type, False, (0, 0, 0))
             text_width, text_height = text_surface.get_size()               # Centered text
             text_offset_x, text_offset_y = (self.__rect.width - text_width) / 2, (self.__rect.height - text_height) / 2
@@ -65,10 +65,7 @@ class Brick(pygame.sprite.Sprite, config.Renderable, config.Collidable):
 
     '''GETTERS'''
 
-    def get_type(self) -> str:
-        """Get the type of the brick."""
-        return self.__type
-    
-    def get_rect(self) -> pygame.Rect:
-        """Get the rect of the brick."""
-        return self.__rect
+    @property
+    def type(self) -> str: return self.__type
+    @property
+    def rect(self) -> pygame.Rect: return self.__rect
