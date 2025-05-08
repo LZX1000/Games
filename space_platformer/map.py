@@ -83,7 +83,8 @@ class Map(Renderable):
                 if cell is not None:
                     self.__map_objects.append(map_objects.Brick(
                         type_=cell,
-                        topleft=(offset_x + x * tile_size, offset_y + y * tile_size)
+                        topleft=(offset_x + x * tile_size, offset_y + y * tile_size),
+                        size=(round(tile_size), round(tile_size))
                     ))
 
     '''FUNCTIONS'''

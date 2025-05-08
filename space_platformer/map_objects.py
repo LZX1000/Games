@@ -1,4 +1,4 @@
-# button.py
+# map_objects.py
 
 import pygame
 import random
@@ -20,6 +20,7 @@ class Brick(pygame.sprite.Sprite, Renderable):
         self,
         type_: str,
         topleft: tuple[int, int],
+        size: tuple[int, int] = None,
         debug_color: tuple[int, int, int] | None = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
     ) -> None:
         super().__init__()
@@ -29,6 +30,8 @@ class Brick(pygame.sprite.Sprite, Renderable):
 
         try:
             self.__surface = pygame.image.load(config.MAP_ASSET_KEYS[type_]).convert_alpha()
+            if size is not None:
+                self.__surface = pygame.transform.scale(self.__surface, size)
         except pygame.error as e:
             raise RuntimeError(f"Failed to load brick image: {e}") from e
 

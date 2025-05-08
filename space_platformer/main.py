@@ -32,7 +32,7 @@ class Gamestate():
 
 def main() -> None:
     # Initialize display
-    display = Display(title="template")
+    display = Display(title="Space Platformer")
 
     # Default values
     tracked_values: dict[str, Any] = {'debug_mode': False}
