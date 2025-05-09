@@ -4,14 +4,16 @@ import pygame
 
 from os import PathLike
 
-import config
-import map_objects
+from settings import Settings
+from config import Renderable
 from display import Display
+import map_objects
 from player import Player
 
 
-class Map(config.Renderable):
+class Map(Renderable):
     __slots__ = (
+        '__settings',
         "__simple_game_map",
         "__map_objects",
         "__collidable_objects",
@@ -22,9 +24,12 @@ class Map(config.Renderable):
 
     def __init__(
         self,
+        settings: Settings,
         filepath: PathLike,
         display: Display
     ) -> None:
+        self.__settings: Settings = settings
+
         self.__load(filepath)
 
         self.__display: Display = display
@@ -48,7 +53,7 @@ class Map(config.Renderable):
             row: list[str] = []
             for x in range(width):
                 color = tuple(round(x) for x in image.get_at((x, y)).normalize())
-                if (type_ := config.MAP_COLOR_KEYS.get(color, None)) != "PLAYER":
+                if (type_ := self.__settings.map_color_keys.get(color, None)) != "PLAYER":
                     row.append(type_)
                 else:
                     row.append(None)
@@ -60,7 +65,7 @@ class Map(config.Renderable):
         if self.__player_pos is None:
             for y in range(height):
                 for x in range(width):
-                    if self.__simple_game_map[y][x] == " ":
+                    if self.__simple_game_map[y][x] is None:
                         self.__player_pos = (x, y)
                         break
 
@@ -85,6 +90,7 @@ class Map(config.Renderable):
             for x, cell in enumerate(row):
                 if cell is not None:
                     self.__map_objects.append(map_objects.Brick(
+                        settings=self.__settings,
                         type_=cell,
                         topleft=(offset_x + x * tile_size, offset_y + y * tile_size),
                         size=(round(tile_size), round(tile_size))
@@ -92,6 +98,7 @@ class Map(config.Renderable):
 
         self.__collidable_objects = pygame.sprite.Group(self.__map_objects)
         self.__player = Player(
+            settings=self.__settings,
             topleft=(offset_x + self.__player_spawn_pos[0] * tile_size, offset_y + self.__player_spawn_pos[1] * tile_size),
             size=(round(tile_size), round(tile_size))
         )

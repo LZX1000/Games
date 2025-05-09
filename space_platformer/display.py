@@ -4,11 +4,13 @@ import pygame
 
 from typing import Any
 
-import config
+from settings import Settings
+from config import color
 
 
 class Display:
     __slots__ = (
+        '__settings',
         '__internal_resolution',
         '__external_resolution',
         '__title',
@@ -20,8 +22,9 @@ class Display:
 
     def __init__(
         self,
-        internal_resolution: tuple[int, int] = config.DEFAULT_INTERNAL_RESOLUTION,
-        external_resolution: tuple[int, int] = config.DEFAULT_EXTERNAL_RESOLUTION,
+        settings: Settings,
+        internal_resolution: tuple[int, int] = None,
+        external_resolution: tuple[int, int] = None,
         title: str = "unnamed"
     ) -> None:
         from ctypes import windll
@@ -35,12 +38,13 @@ class Display:
         pygame.display.set_caption(title)
 
         # Store fields
-        self.__internal_resolution = internal_resolution
-        self.__external_resolution = external_resolution
+        self.__settings = settings
+        self.__internal_resolution = settings.internal_resolution if internal_resolution is None else internal_resolution
+        self.__external_resolution = settings.external_resolution if external_resolution is None else external_resolution
         self.__title = title
         
         # Set the font
-        self.font = pygame.font.SysFont("Arial", self.__internal_resolution[0] // config.FONT_SCALE_FACTOR)
+        self.font = pygame.font.SysFont("Arial", self.__internal_resolution[0] // self.__settings.font_scale_factor)
 
         # Create internal surface for rendering
         self.__internal_surface = pygame.Surface(self.__internal_resolution)
@@ -50,7 +54,7 @@ class Display:
 
     '''FUNCTIONS'''
 
-    def fill(self, new: config.color) -> None:
+    def fill(self, new: color) -> None:
         """Fill the internal surface with a color."""
         self.__internal_surface.fill(new)
 

@@ -3,13 +3,15 @@
 import pygame
 import random
 
-import config
+from settings import Settings
+from config import Renderable, Collidable
 from display import Display
 
 
-class Brick(pygame.sprite.Sprite, config.Renderable, config.Collidable):
+class Brick(pygame.sprite.Sprite, Renderable, Collidable):
     """Creates a brick object, contains a rect object."""
     __slots__ = (
+        '__settings',
         '__debug_color',
         '__surface',
         '__type',
@@ -18,6 +20,7 @@ class Brick(pygame.sprite.Sprite, config.Renderable, config.Collidable):
 
     def __init__(
         self,
+        settings: Settings,
         type_: str,
         topleft: tuple[int, int],
         size: tuple[int, int] = None,
@@ -25,8 +28,10 @@ class Brick(pygame.sprite.Sprite, config.Renderable, config.Collidable):
     ) -> None:
         super().__init__()
 
+        self.__settings: Settings = settings
+
         try:
-            self.__surface = pygame.image.load(config.MAP_ASSET_KEYS[type_]).convert_alpha()
+            self.__surface = pygame.image.load(self.__settings.map_asset_keys[type_]).convert_alpha()
             if size is not None:
                 self.__surface = pygame.transform.scale(self.__surface, size)
         except pygame.error as e:

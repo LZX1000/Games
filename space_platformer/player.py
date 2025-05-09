@@ -4,12 +4,14 @@ import pygame
 
 import random
 
-import config
+from settings import Settings
+from config import Renderable, Collidable
 from display import Display
 
-class Player(pygame.sprite.Sprite, config.Renderable, config.Collidable):
+class Player(pygame.sprite.Sprite, Renderable, Collidable):
     """Creates a player object, contains a rect object."""
     __slots__ = (
+        '__settings',
         '__debug_color',
         '__surface',
         '__main_rect',
@@ -22,19 +24,22 @@ class Player(pygame.sprite.Sprite, config.Renderable, config.Collidable):
         "WALL" : lambda self: setattr(self, '__velocity', None),
         # Alternative wall collision effect for debugging
         # "WALL" : lambda self: self.__main_rect.update((random.randint(0, 300), random.randint(0, 300)), (self.__main_rect.width, self.__main_rect.height)),
-        "GOAL" : lambda: setattr(config, 'CURRENT_GAMESTATE', "menu")
+        "GOAL" : lambda self: setattr(self.__settings, 'gamestate', "menu")
     }
 
     def __init__(
             self,
+            settings: Settings,
             topleft: tuple[int, int],
             size: tuple[int, int] = None,
             debug_color: tuple[int, int, int] | None = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
         ) -> None:
         super().__init__()
 
+        self.__settings: Settings = settings
+
         try:
-            self.__surface = pygame.image.load(config.MAP_ASSET_KEYS["PLAYER"]).convert_alpha()
+            self.__surface = pygame.image.load(self.__settings.map_asset_keys["PLAYER"]).convert_alpha()
             if size is not None:
                 self.__surface = pygame.transform.scale(self.__surface, size)
         except pygame.error as e:
@@ -44,13 +49,13 @@ class Player(pygame.sprite.Sprite, config.Renderable, config.Collidable):
         self.__debug_color = debug_color
         self.__main_rect = pygame.Rect(*topleft, *self.__surface.get_size())
         self.__grounded_rect = pygame.Rect(
-            *(x - config.JUMPABLE_DISTANCE_THRESHOLD for x in topleft),
-            *(x + 2 * config.JUMPABLE_DISTANCE_THRESHOLD for x in (self.__surface.get_size()))
+            *(x - self.__settings.jumpable_distance_threshold for x in topleft),
+            *(x + 2 * self.__settings.jumpable_distance_threshold for x in (self.__surface.get_size()))
         )
 
     '''FUNCTIONS'''
 
-    def collide(self, other: config.Collidable) -> None:
+    def collide(self, other: Collidable) -> None:
         """Called when the player collides with another object."""
         self.__EFFECTS.get(other.type, lambda self: None)(self)
 
@@ -98,7 +103,7 @@ class Player(pygame.sprite.Sprite, config.Renderable, config.Collidable):
     @rect.setter
     def pos(self, pos: tuple[int, int]) -> None:
         self.__main_rect.topleft = pos
-        self.__grounded_rect.topleft = tuple(x * config.JUMPABLE_DISTANCE_THRESHOLD for x in pos)
+        self.__grounded_rect.topleft = tuple(x * self.__settings.jumpable_distance_threshold for x in pos)
     @grounded.setter
     def grounded(self, grounded: bool) -> None:
         self.__grounded = grounded

@@ -6,11 +6,11 @@ import inspect
 import random
 from typing import Callable
 
-import config
+from config import Renderable, Clickable
 from display import Display
 
 
-class Button(pygame.sprite.Sprite, config.Renderable, config.Clickable):
+class Button(pygame.sprite.Sprite, Renderable, Clickable):
     """Creates a button object, contains a text surface and a rect object."""
     __slots__ = (
         '__debug_color',
