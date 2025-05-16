@@ -35,17 +35,11 @@ class Scene():
                 button_surface.get_width() * self.__settings.button_edge_spacing,
                 display.internal_surface.get_height() - button_surface.get_height() * self.__settings.button_edge_spacing - button_surface.get_height()
                 ),
-            effect=lambda: setattr(self.__settings, 'gamestate', 'menu'),
+            effect=lambda: setattr(self.__settings, 'gamestate', 'scene_1'),
         ))
 
         # Create map
-        self.__objects.append(settings.maps.get("Test_Map_1", None))
-
-
-        # self.__objects.append(Map(
-        #     filepath="space_platformer/assets/Test_Map_1.png",
-        #     display=display
-        # ))
+        self.__objects.append(settings.maps.get("Test_Map_2", None))
 
     @property
     def objects(self) -> list[Any]: return self.__objects

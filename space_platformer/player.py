@@ -48,9 +48,16 @@ class Player(pygame.sprite.Sprite, Renderable, Collidable):
         self.__grounded = False
         self.__debug_color = debug_color
         self.__main_rect = pygame.Rect(*topleft, *self.__surface.get_size())
+        # self.__grounded_rect = pygame.Rect(
+        #     *(x - self.__settings.jumpable_distance_threshold for x in topleft),
+        #     *(x + 2 * self.__settings.jumpable_distance_threshold for x in (self.__surface.get_size()))
+        # )
+        player_width, player_height = self.__surface.get_size()
         self.__grounded_rect = pygame.Rect(
-            *(x - self.__settings.jumpable_distance_threshold for x in topleft),
-            *(x + 2 * self.__settings.jumpable_distance_threshold for x in (self.__surface.get_size()))
+            topleft[0] - self.__settings.jumpable_distance_threshold * player_width,
+            topleft[1] - self.__settings.jumpable_distance_threshold * player_height,
+            player_width + 2 * self.__settings.jumpable_distance_threshold * player_width,
+            player_height + 2 * self.__settings.jumpable_distance_threshold * player_height
         )
 
     '''FUNCTIONS'''

@@ -35,7 +35,7 @@ class Scene():
                 display.internal_surface.get_width() - button_surface.get_width() * self.__settings.button_edge_spacing - button_surface.get_width(),
                 display.internal_surface.get_height() - button_surface.get_height() * self.__settings.button_edge_spacing - button_surface.get_height()
                 ),
-            effect=lambda: setattr(self.__settings, 'gamestate', 'game'),
+            effect=lambda: setattr(self.__settings, 'gamestate', 'scene_1'),
         ))
         self.__objects.append(Button(
             surface=(button_surface := display.font.render("Exit Game", False, (0, 0, 0), (200, 200, 200))),

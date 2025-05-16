@@ -26,10 +26,11 @@ class Settings():
     __FONT_SCALE_FACTOR = 36
 
     __BUTTON_EDGE_SPACING = 1/3
-    __JUMPABLE_DISTANCE_THRESHOLD = 2
+    __JUMPABLE_DISTANCE_THRESHOLD = 0.05
 
     __MAPS: dict[str, PathLike] = {
         "Test_Map_1": "space_platformer/assets/Test_Map_1.png",
+        "Test_Map_2": "space_platformer/assets/Test_Map_2.png",
     }
 
     # Define colors (R, G, B, A) with RGBA
@@ -49,13 +50,15 @@ class Settings():
         from map import Map
         from display import Display
 
-        import game
+        import scene_1
+        import scene_2
         import menu
 
         self.__gamestate = "menu"
 
         self.__gamestates = {
-            "game": game,
+            "scene_1": scene_1,
+            "scene_2": scene_2,
             "menu": menu
         }
 
