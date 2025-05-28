@@ -15,6 +15,10 @@ class Collidable:
     """Subclass for collidable objects."""
     pass
 
+class Controllable:
+    """Subclass for controllable objects."""
+    pass
+
 class Clickable:
     """Subclass for clickable objects."""
     pass
@@ -23,6 +27,12 @@ class Renderable(ABC):
     @abstractmethod
     def render(self, display: 'Display', pos: tuple[int, int] | None = None) -> None:
         """Render the object on the display."""
+        pass
+
+class Movable(ABC):
+    @abstractmethod
+    def update(self) -> None:
+        """Update the object based on the delta time."""
         pass
 
 class Scene():

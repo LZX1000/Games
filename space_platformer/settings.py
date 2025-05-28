@@ -4,29 +4,34 @@ import pygame
 from typing import Any
 from os import PathLike
 
-from config import Clickable, Renderable, Scene, Collidable
+from config import Clickable, Renderable, Scene, Collidable, Movable
 
 
 class Settings():
     """Configuration class for the game."""
 
     __slots__ = (
+        '__delta_time',
         '__gamestate',
         '__gamestates',
         '__display',
-        '__tracked_values'
+        '__tracked_values',
+        '__command_category_enabled',
     )
 
 
-    __DEFAULT_INTERNAL_RESOLUTION = (1280, 780)
-    __DEFAULT_EXTERNAL_RESOLUTION = (1920, 1080)
+    __DEFAULT_INTERNAL_RESOLUTION: tuple[int, int] = (1280, 780)
+    __DEFAULT_EXTERNAL_RESOLUTION: tuple[int, int] = (1920, 1080)
     # __DEFAULT_INTERNAL_RESOLUTION = (2293, 960)
     # __DEFAULT_EXTERNAL_RESOLUTION = (3440, 1440)
 
-    __FONT_SCALE_FACTOR = 36
+    __FONT_SCALE_FACTOR: int = 36
 
-    __BUTTON_EDGE_SPACING = 1/3
-    __JUMPABLE_DISTANCE_THRESHOLD = 0.05
+    __FRAME_RATE: int = 60
+
+    __BUTTON_EDGE_SPACING: float = 1/3
+    __JUMPABLE_DISTANCE_THRESHOLD: float = 0.05
+    __JUMP_SPEED: float = 0.5
 
     __MAPS: dict[str, PathLike] = {
         "Test_Map_1": "space_platformer/assets/Test_Map_1.png",
@@ -46,6 +51,30 @@ class Settings():
         "PLAYER": "space_platformer/assets/player.png",
     }
 
+    __SPECIAL_COMMANDS = {
+        'system' : {
+        # 'system' : (("new_values"), {
+            'debug_toggle' : (
+                lambda held, pressed: held[pygame.K_LCTRL] and pygame.K_SPACE in pressed,
+                lambda self, new_values: new_values.update({
+                    'debug_mode': not self.tracked_values.get('debug_mode', False)
+                })
+            ),
+            'quit' : (
+                lambda held, pressed: held[pygame.K_ESCAPE] or pygame.K_ESCAPE in pressed,
+                lambda self, _: self.__quit()
+            )
+        },
+        # }),
+        'player_controls' : {
+            'jump' : (
+                lambda held, pressed: held[pygame.K_SPACE] or pygame.K_SPACE in pressed,
+                lambda self, _: self.tracked_values['map'].player.jump(self.tracked_values['mouse_pos'])
+            ),
+        }
+    }
+
+
     def __init__(self) -> None:
         from map import Map
         from display import Display
@@ -62,6 +91,12 @@ class Settings():
             "menu": menu
         }
 
+        self.__command_category_enabled = {
+            'debug': False,
+            'player_controls': False,
+            'system': True,
+        }
+
         # Initialize display
         self.__display = Display(
             self,
@@ -72,6 +107,8 @@ class Settings():
 
         # Default values
         self.__tracked_values: dict[str, Any] = {}
+
+        clock = pygame.time.Clock()
 
         scene: Scene = self.gamestates[self.gamestate].Scene(self, self.display)
         self.__tracked_values['has_map'] = False
@@ -84,6 +121,7 @@ class Settings():
                 for object_ in scene.objects:
                     if object_ in self.maps.values():
                         self.__tracked_values['has_map'] = True
+                        self.__command_category_enabled['player_controls'] = True
                         self.__tracked_values['map'] = Map(self, filepath=object_, display=self.display)
                         scene.objects = [object_ for object_ in scene.objects if object_ not in self.maps.values()] + [self.__tracked_values['map']]
                         # # Debugging to check that collision works
@@ -91,14 +129,19 @@ class Settings():
                         break
                 else:
                     self.__tracked_values['has_map'] = False
+                    self.__command_category_enabled['player_controls'] = False
 
             changed_values: dict[str, Any] = self.__event_handling(scene)
             self.__tracked_values.update(changed_values)
 
-            self.__render(scene)
-            
+            self.__delta_time = clock.tick(self.__FRAME_RATE) / 1000
+
+            self.__update(scene)
+
             if self.tracked_values.get("has_map", False):
                 self.__check_player_collision(self.tracked_values["map"])
+
+            self.__render(scene)
 
             # Update display
             self.__display.update(self.tracked_values)
@@ -107,31 +150,39 @@ class Settings():
     def __event_handling(self, scene: Scene) -> dict[str, Any]:
         """Handles events such as mouse clicks and keyboard inputs."""
         new_values: dict[str, Any] = {}
-
-        # Get held keys
-        keys = pygame.key.get_pressed()
-        # Get accurate mouse position
-        new_values['mouse_pos'] = ([x * y / z for x, y, z in zip(pygame.mouse.get_pos(), self.display.internal_surface.get_size(), self.display.screen.get_size())])
-
         objects: list[Renderable | Clickable] = scene.objects
+        held: dict = pygame.key.get_pressed()
 
+        new_values['mouse_pos'] = [
+            x * y / z for x, y, z in zip(
+                pygame.mouse.get_pos(),
+                self.display.internal_surface.get_size(),
+                self.display.screen.get_size()
+            )
+        ]
+        new_values['unused_keys'] = []
+
+        pressed_keys: set = set()
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or keys[pygame.K_ESCAPE]:
+            if event.type == pygame.QUIT:
                 self.__quit()
 
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and keys[pygame.K_LCTRL]:
-                    new_values['debug_mode'] = not self.tracked_values['debug_mode'] if 'debug_mode' in self.tracked_values else True
-                elif event.key == pygame.K_SPACE:
-                    new_values['jumped'] = True
-                    new_values['jumped_pos'] = new_values['mouse_pos']
-                else:
-                    new_values['jumped_pos'] = None
+                pressed_keys.add(event.key)
+
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     for button in [obj for obj in objects if isinstance(obj, Clickable)]:
                         if button.rect.collidepoint(new_values['mouse_pos']):
                             button.clicked()
+
+        for category, commands in self.__SPECIAL_COMMANDS.items():
+            if not self.command_category_enabled.get(category, False):
+                continue
+
+            for _, (condition, reaction) in commands.items():
+                if condition(held, pressed_keys):
+                    reaction(self, new_values)
 
         return new_values
 
@@ -145,7 +196,7 @@ class Settings():
             collided=lambda s1, s2: s1.rect.colliderect(s2.grounded_rect) if isinstance(s2, Player) else s1.grounded_rect.colliderect(s2.rect)
         )
         if wall_collided and not player.grounded:
-            player.grounded = True
+            player.grounded = bool(wall_collided)
 
         collided_objects: list[Collidable] = pygame.sprite.spritecollide(
             player, map_.collidable_objects,
@@ -153,10 +204,13 @@ class Settings():
         )
         did_wall: bool = False
         for collided in collided_objects:
-            if collided.type == "WALL" and not did_wall:
-                did_wall = True
+            if collided.type == "WALL":
+                if did_wall:
+                    continue
+                else:
+                    did_wall = True
             player.collide(collided)
-
+            
 
     def __render(self, scene) -> None:
         """Renders the given objects."""
@@ -170,12 +224,22 @@ class Settings():
                 object.debug(self.display)
 
 
+    def __update(self, scene) -> None:
+        """Updates the given objects."""
+        for object in [obj for obj in scene.objects if isinstance(obj, Movable)]:
+            object.update()
+
+
     def __quit() -> None:
         """Quits the Pygame instance."""
         pygame.quit()
         exit()
 
-
+    
+    @property
+    def command_category_enabled(self) -> dict[str, bool]: return self.__command_category_enabled
+    @property
+    def delta_time(self) -> float: return self.__delta_time
     @property
     def internal_resolution(self) -> tuple[int, int]: return self.__DEFAULT_INTERNAL_RESOLUTION
     @property

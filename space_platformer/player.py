@@ -5,10 +5,10 @@ import pygame
 import random
 
 from settings import Settings
-from config import Renderable, Collidable
+from config import Renderable, Collidable, Controllable, Movable
 from display import Display
 
-class Player(pygame.sprite.Sprite, Renderable, Collidable):
+class Player(pygame.sprite.Sprite, Renderable, Collidable, Controllable, Movable):
     """Creates a player object, contains a rect object."""
     __slots__ = (
         '__settings',
@@ -25,6 +25,10 @@ class Player(pygame.sprite.Sprite, Renderable, Collidable):
         # Alternative wall collision effect for debugging
         # "WALL" : lambda self: self.__main_rect.update((random.randint(0, 300), random.randint(0, 300)), (self.__main_rect.width, self.__main_rect.height)),
         "GOAL" : lambda self: setattr(self.__settings, 'gamestate', "menu")
+    }
+
+    __CONTROLS = {
+        "SPACE": lambda self: self.__jump()
     }
 
     def __init__(
@@ -62,9 +66,37 @@ class Player(pygame.sprite.Sprite, Renderable, Collidable):
 
     '''FUNCTIONS'''
 
+    def jump(self, mouse_pos: tuple[int, int]) -> None:
+        """Called when the player jumps."""
+        if self.__grounded:
+            if mouse_pos is not None:
+                dx = mouse_pos[0] - self.__main_rect.centerx
+                dy = mouse_pos[1] - self.__main_rect.centery
+                length = (dx ** 2 + dy ** 2) ** 0.5
+                if length != 0:
+                    speed = getattr(self.__settings, "jump_speed", 10)  # Default speed if not set
+                    norm_dx = dx / length
+                    norm_dy = dy / length
+                    self.__velocity = (norm_dx * speed, norm_dy * speed)
+                else:
+                    self.__velocity = (0, 0)
+
+
     def collide(self, other: Collidable) -> None:
         """Called when the player collides with another object."""
         self.__EFFECTS.get(other.type, lambda self: None)(self)
+
+
+    def update(self) -> None:
+        """Updates the player object based on the delta time."""
+        delta_time = self.__settings.delta_time
+
+        if self.__velocity is not None:
+            # Update the position based on the velocity
+            dx, dy = self.__velocity
+            self.__main_rect.x += dx * delta_time
+            self.__main_rect.y += dy * delta_time
+
 
     def render(
             self,
@@ -89,7 +121,9 @@ class Player(pygame.sprite.Sprite, Renderable, Collidable):
             font = display.debug_font
             texts: list[pygame.Surface] = [
                 font.render(self.__class__.__name__, False, (0, 0, 0)),
-                font.render(str(self.__grounded), False, (0, 0, 0))
+                font.render(str(self.__grounded), False, (0, 0, 0)),
+                font.render(str(self.__velocity), False, (0, 0, 0)),
+                # font.render(str(getattr(self, '__velocity', (0, 0))), False, (0, 0, 0)),
             ]
             for i, text in enumerate(texts):
                 width, height = text.get_size()
@@ -114,5 +148,5 @@ class Player(pygame.sprite.Sprite, Renderable, Collidable):
     @grounded.setter
     def grounded(self, grounded: bool) -> None:
         self.__grounded = grounded
-        if grounded:
-            self.__velocity = (0, 0)
+        # if grounded:
+        #     self.__velocity = (0, 0)
